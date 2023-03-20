@@ -19,9 +19,9 @@ router.get('/', async (req, res, next) => {
     let size = parseInt(req.query.size) || 5;
 
     // Phase 2B: Calculate limit and offset
-    if (page >= 1 && size >= 1){
-        query.limit = size;
-        query.offset = size * (page - 1)
+    if (parseInt(req.query.page) >= 1 && parseInt(req.query.size) >= 1){
+        limit = size;
+        offset = size * (page - 1)
     }
 
     // Phase 2B (optional): Special case to return all students (page=0, size=0)
@@ -96,6 +96,7 @@ router.get('/', async (req, res, next) => {
         limit,
         offset
     });
+    console.log(`offset: ${offset}`)
 
     // Phase 2E: Include the page number as a key of page in the response data
         // In the special case (page=0, size=0) that returns all students, set
