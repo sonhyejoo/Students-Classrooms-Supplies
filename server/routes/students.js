@@ -74,6 +74,9 @@ router.get('/', async (req, res, next) => {
         attributes: ['id', 'firstName', 'lastName', 'leftHanded'],
         where,
         // Phase 1A: Order the Students search results
+        order: [
+            'lastName', 'firstName'
+        ]
     });
 
     // Phase 2E: Include the page number as a key of page in the response data

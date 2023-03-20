@@ -11,6 +11,20 @@ router.get('/category/:categoryName', async (req, res, next) => {
         // Find all supplies by category name
         // Order results by supply's name then handed
         // Return the found supplies as the response body
+    let catName = req.params.categoryName;
+    let result = {};
+    result.rows = await Supply.findAll({
+        where: {
+            category: catName
+        },
+        attributes: {
+            exclude: ['createdAt', 'updatedAt']
+        },
+        order: [
+            'name', 'handed'
+        ]
+    })
+    res.json(result)
     // Phase 8A:
         // Include Classroom in the supplies query results
         // Order nested classroom results by name first then by supply name
