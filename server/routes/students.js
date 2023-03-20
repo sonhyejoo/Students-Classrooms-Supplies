@@ -28,11 +28,12 @@ router.get('/', async (req, res, next) => {
     // Phase 2B: Add an error message to errorResult.errors of
         // 'Requires valid page and size params' when page or size is invalid
     // Your code here
-    else {
+    else if (parseInt(req.query.page) == undefined || parseInt(req.query.size) == undefined) {
         errorResult.errors.push({
             message: 'Requires valid page and size params'
         })
         res.status(400).json(errorResult)
+        return;
     }
 
     // Phase 4: Student Search Filters
@@ -85,6 +86,7 @@ router.get('/', async (req, res, next) => {
     // Phase 3A: Include total number of results returned from the query without
         // limits and offsets as a property of count on the result
         // Note: This should be a new query
+    result.count = await Student.count()
 
     result.rows = await Student.findAll({
         attributes: ['id', 'firstName', 'lastName', 'leftHanded'],
@@ -129,6 +131,10 @@ router.get('/', async (req, res, next) => {
             }
         */
     // Your code here
+    if (size == 0){
+        size = 1
+    }
+    result.pageCount = Math.ceil(result.count / size)
 
     res.json(result);
 });
