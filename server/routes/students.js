@@ -62,6 +62,27 @@ router.get('/', async (req, res, next) => {
     const where = {};
 
     // Your code here
+    let left;
+    if (req.query.firstName){
+        where.firstName = {[Op.substring]:req.query.firstName}
+    }
+    if (req.query.lastName){
+        where.lastName = {[Op.substring]:req.query.lastName}
+    }
+    if (req.query.lefty.toLowerCase() == 'true'){
+        where.leftHanded = true
+    }
+    else if (req.query.lefty.toLowerCase() == 'false'){
+        where.leftHanded = false
+    }
+    else if (req.query.lefty){
+        console.log(req.query.lefty)
+        errorResult.errors.push({
+            message: 'Lefty should be either true or false'
+        })
+        res.status(400).json(errorResult)
+        return;
+    }
 
 
     // Phase 2C: Handle invalid params with "Bad Request" response
@@ -86,7 +107,9 @@ router.get('/', async (req, res, next) => {
     // Phase 3A: Include total number of results returned from the query without
         // limits and offsets as a property of count on the result
         // Note: This should be a new query
-    result.count = await Student.count()
+    result.count = await Student.count({
+        where
+    })
 
     result.rows = await Student.findAll({
         attributes: ['id', 'firstName', 'lastName', 'leftHanded'],
