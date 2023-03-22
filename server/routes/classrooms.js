@@ -73,11 +73,11 @@ router.get('/', async (req, res, next) => {
     }
 
     let name
-    if (name){
+    if (req.query.name){
         name = req.query.name.toLowerCase()
         where.name = {[Op.substring]: name}
     }
-    console.log()
+    console.log(`name: ${where.name}`)
 
     const classrooms = await Classroom.findAll({
         attributes: [ 'id', 'name', 'studentLimit' ],
