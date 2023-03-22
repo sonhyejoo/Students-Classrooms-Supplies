@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import model(s)
-const { Student } = require('../db/models');
+const { Student, Classroom, StudentClassroom} = require('../db/models');
 const { Op } = require("sequelize");
 
 // List
@@ -69,10 +69,10 @@ router.get('/', async (req, res, next) => {
     if (req.query.lastName){
         where.lastName = {[Op.substring]:req.query.lastName}
     }
-    if (req.query.lefty.toLowerCase() == 'true'){
+    if (req.query.lefty && req.query.lefty.toLowerCase() == 'true'){
         where.leftHanded = true
     }
-    else if (req.query.lefty.toLowerCase() == 'false'){
+    else if (req.query.lefty && req.query.lefty.toLowerCase() == 'false'){
         where.leftHanded = false
     }
     else if (req.query.lefty){
@@ -112,16 +112,26 @@ router.get('/', async (req, res, next) => {
     })
 
     result.rows = await Student.findAll({
-        attributes: ['id', 'firstName', 'lastName', 'leftHanded'],
         where,
+        attributes: ['id', 'firstName', 'lastName', 'leftHanded'],
+        include: [
+            {
+                model: Classroom,
+                attributes:
+                    ['id', 'name'],
+                include: []
+            }
+        ],
         // Phase 1A: Order the Students search results
         order: [
-            'lastName', 'firstName'
+            ['lastName'],
+            ['firstName'],
+            [Classroom, StudentClassroom, 'grade', 'desc']
+            // [Classroom, 'grade']
         ],
         limit,
         offset
     });
-    console.log(`offset: ${offset}`)
 
     // Phase 2E: Include the page number as a key of page in the response data
         // In the special case (page=0, size=0) that returns all students, set
