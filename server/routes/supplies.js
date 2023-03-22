@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import model(s)
-const { Supply } = require('../db/models');
+const { Supply, Classroom } = require('../db/models');
 
 // List of supplies by category
 router.get('/category/:categoryName', async (req, res, next) => {
@@ -20,9 +20,15 @@ router.get('/category/:categoryName', async (req, res, next) => {
         attributes: {
             exclude: ['createdAt', 'updatedAt']
         },
+        include: {
+            model: Classroom,
+            attributes: ['id', 'name'],
+            include: [],
+        },
         order: [
-            'name', 'handed'
-        ]
+            [Classroom, 'name'],
+            ['name']
+        ],
     })
     res.json(result)
     // Phase 8A:
